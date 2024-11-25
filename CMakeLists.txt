@@ -10,7 +10,15 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
+# 查找 Qt6
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
+
+# 查找 OpenCV
+find_package(OpenCV REQUIRED)
+
+# 打印 OpenCV 信息以进行调试
+message(STATUS "OpenCV_INCLUDE_DIRS: ${OpenCV_INCLUDE_DIRS}")
+message(STATUS "OpenCV_LIBS: ${OpenCV_LIBS}")
 
 set(SOURCES
     main.cpp
@@ -34,8 +42,7 @@ set(RESOURCE_FILES
     img.qrc
 )
 
-# 不再需要手动调用 qt6_wrap_ui 和 qt6_add_resources
-
+# 添加可执行文件
 add_executable(${PROJECT_NAME}
     ${SOURCES}
     ${HEADERS}
@@ -43,9 +50,12 @@ add_executable(${PROJECT_NAME}
     ${RESOURCE_FILES}
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets)
+# 链接 Qt6 和 OpenCV 库
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets ${OpenCV_LIBS})
 
+# 添加包含目录
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
+    ${OpenCV_INCLUDE_DIRS}
 )

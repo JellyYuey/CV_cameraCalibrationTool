@@ -4,16 +4,30 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
+                "/usr/include",
                 "/usr/include/qt6",
                 "/usr/include/qt6/QtCore",
                 "/usr/include/qt6/QtGui",
-                "/usr/include/qt6/QtWidgets"
+                "/usr/include/qt6/QtWidgets",
+                "/usr/include/opencv4"
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/g++",
+            "compilerPath": "/usr/bin/g++",  // 确保使用 GCC 编译器
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "linux-gcc-x64"
+            "intelliSenseMode": "linux-gcc-x64",  // 设置为 GCC 模式
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/**",
+                    "/usr/include",
+                    "/usr/include/qt6",
+                    "/usr/include/qt6/QtCore",
+                    "/usr/include/qt6/QtGui",
+                    "/usr/include/qt6/QtWidgets",
+                    "/usr/include/opencv4"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
         }
     ],
     "version": 4
