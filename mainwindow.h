@@ -5,7 +5,6 @@
 #include <QMainWindow>
 #include <QPointer>
 #include <QSettings>
-
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -26,7 +25,7 @@ private slots:
   void on_actionAdd_Images_triggered();
   void on_actionSettings_triggered();
 
-  void on_actionCalilbrate_triggered();
+  void on_actionCalibrate_triggered();
 
 private:
   Ui::MainWindow *ui;
