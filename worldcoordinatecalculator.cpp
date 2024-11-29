@@ -1,10 +1,7 @@
 #include "worldcoordinatecalculator.h"
 
 // Generate world coordinates for the chessboard
-<<<<<<< HEAD
 
-=======
->>>>>>> 10cf5d6e155af2e847060c1af42f091a5c3ddb82
 std::vector<cv::Point3f> WorldCoordinateCalculator::generateWorldCoordinates(const std::vector<cv::Point2f>& imagePoints) {
     std::vector<cv::Point3f> worldPoints;
 

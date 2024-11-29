@@ -1,10 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include"mylabel.h"
-#include "CameraCalibration.h"
-<<<<<<< HEAD
-
-=======
+#include "cameracalibration.h"
 #include "worldcoordinatecalculator.h"
 >>>>>>> 10cf5d6e155af2e847060c1af42f091a5c3ddb82
 
@@ -21,11 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     // ui->actionExport_Camera_Parameters->setEnabled(false);
     // ui->actionCalilbrate->setEnabled(false);
     // ui->actionSettings->setEnabled(false);
-<<<<<<< HEAD
-    // 连接右侧图片区域的鼠标点击信号
-    // connect(ui->label, &MyLabel::sig_click, this, &MainWindow::on_label_click);
-=======
->>>>>>> 10cf5d6e155af2e847060c1af42f091a5c3ddb82
+
 }
 
 MainWindow::~MainWindow()
@@ -39,24 +32,16 @@ MainWindow::~MainWindow()
  */
 void MainWindow::addPixmap(const QPixmap &img)
 {
-<<<<<<< HEAD
 
-=======
-    // Create CameraCalibration object
-    CameraCalibration calibration;
->>>>>>> 10cf5d6e155af2e847060c1af42f091a5c3ddb82
     int rows = 6;  // Number of rows in the chessboard pattern
     int cols = 9;  // Number of columns in the chessboard pattern
     float boxSize = settingsDialog->getBoardSize();  // Physical size of each grid, in millimeters
 
-    // Create WorldCoordinateCalculator object
-<<<<<<< HEAD
+
     calculator.setRows(rows);
     calculator.setCols(cols);
     calculator.setBoxSize(boxSize);
-=======
-    WorldCoordinateCalculator calculator(rows, cols, boxSize);
->>>>>>> 10cf5d6e155af2e847060c1af42f091a5c3ddb82
+
 
     // Convert QPixmap to QImage
     QImage qImage = img.toImage();
@@ -73,32 +58,15 @@ void MainWindow::addPixmap(const QPixmap &img)
 
     // If corners are detected, display the results
     if (found) {
-<<<<<<< HEAD
-        featurePoints=corners;
+
         // Calculate world coordinates
         std::vector<cv::Point3f> worldCorners = calculator.generateWorldCoordinates(corners);
-
-=======
-        // Calculate world coordinates
-        std::vector<cv::Point3f> worldCorners = calculator.generateWorldCoordinates(corners);
-
-        // Optionally, print the calculated world coordinates
-        // std::cout << "World Coordinates: " << std::endl;
-        // for (const auto& pt : worldCorners) {
-        //     std::cout << pt.x << ", " << pt.y << ", " << pt.z << std::endl;
-        // }
->>>>>>> 10cf5d6e155af2e847060c1af42f091a5c3ddb82
 
         // Convert the processed Mat (with drawn corners) to QImage
         cv::Mat processedMat = calibration.getProcessedImage();  // Get the image with drawn corners
 
         QImage processedImage = calibration.MatToQImage(processedMat);  // Convert to QImage
-<<<<<<< HEAD
 
-=======
-        QString filePath = "C:/Users/21064/Desktop/image.png";
-        processedImage.save(filePath);  // Save the processed image
->>>>>>> 10cf5d6e155af2e847060c1af42f091a5c3ddb82
         QPixmap processedPixmap = QPixmap::fromImage(processedImage);  // Convert to QPixmap
 
         // Display the processed image
@@ -117,7 +85,7 @@ void MainWindow::addPixmap(const QPixmap &img)
         qDebug() << "Corners not found in image";
     }
 }
-<<<<<<< HEAD
+
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     QPixmap pixmap = ui->label->pixmap();
@@ -161,10 +129,6 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     }
 }
 
-=======
->>>>>>> 10cf5d6e155af2e847060c1af42f091a5c3ddb82
-
-
 
 /**
  * @brief MainWindow::on_actionAdd_Images_triggered
@@ -202,19 +166,4 @@ void MainWindow::on_actionCalilbrate_triggered()
     //Clibration start
 }
 
-<<<<<<< HEAD
-// // 鼠标点击事件槽函数
-// void MainWindow::on_label_click(QMouseEvent *event)
-// {
-//     if (event->button() == Qt::LeftButton) {
-//         // 获取右侧 label 中的鼠标点击位置
-//         QPoint clickPos = event->pos();
-//         qDebug() << "Mouse clicked at (MainWindow): " << clickPos;
-
-//         // 在这里执行你想要的操作，例如标记交叉点，更新图像等
-//     }
-// }
-
-=======
->>>>>>> 10cf5d6e155af2e847060c1af42f091a5c3ddb82
 
