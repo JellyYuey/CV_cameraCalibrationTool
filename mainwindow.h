@@ -18,6 +18,11 @@ public:
   MainWindow(QWidget *parent = nullptr);
   ~MainWindow();
 
+  // 新增的参数获取函数
+  QString getCameraType() const;
+  QString getCalibrationBoardType() const;
+  int getCalibrationBoardSize() const;
+
 private:
   void addPixmap(const QPixmap &);
 

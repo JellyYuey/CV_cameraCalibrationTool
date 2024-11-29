@@ -25,12 +25,16 @@ set(SOURCES
     mainwindow.cpp
     mylabel.cpp
     settings.cpp
+    camera_calibration.cpp
+    image_processing.cpp
 )
 
 set(HEADERS
     mainwindow.h
     mylabel.h
     settings.h
+    camera_calibration.h
+    image_processing.h
 )
 
 set(UI_FILES

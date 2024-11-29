@@ -27,6 +27,14 @@ void MainWindow::addPixmap(const QPixmap &img) {
   ui->listWidget->setItemWidget(item, m);
 }
 
+QString MainWindow::getCameraType() const { return cameraType; }
+
+QString MainWindow::getCalibrationBoardType() const {
+  return calibrationBoardType;
+}
+
+int MainWindow::getCalibrationBoardSize() const { return calibrationBoardSize; }
+
 /**
  * @brief MainWindow::on_actionAdd_Images_triggered
  * add images
@@ -57,39 +65,4 @@ void MainWindow::on_actionSettings_triggered() {
   settingsDialog->exec();
 }
 
-void MainWindow::on_actionCalibrate_triggered() {
-  // 获取用户上传的图像
-  QFileDialog dialog(this, "Select Images", "", "Images (*.jpg *.png)");
-  dialog.setFileMode(QFileDialog::ExistingFiles);
-  if (dialog.exec()) {
-    QStringList fileNames = dialog.selectedFiles();
-
-    // 图像读取与处理
-    std::vector<cv::Mat> images;
-    std::vector<std::vector<cv::Point2f>> imagePoints;
-
-    // 读取图像并检测角点
-    ImageProcessing imgProcessor;
-    if (imgProcessor.processImages(images, imagePoints)) {
-      // 获取世界坐标系中的点
-      std::vector<cv::Point3f> worldPoints;
-      imgProcessor.getWorldCoordinates(worldPoints);
-
-      // 创建相机标定类
-      CameraCalibration calib;
-      calib.setCameraParameters(cameraType, 9, 6,
-                                30.0f); // 例：棋盘格大小为 9x6，每个格子 30mm
-      bool success = calib.calibrate(images, imagePoints, worldPoints);
-
-      if (success) {
-        // 标定成功，获取相机矩阵和畸变系数
-        cv::Mat cameraMatrix = calib.getCameraMatrix();
-        cv::Mat distCoeffs = calib.getDistortionCoefficients();
-        // 可以在UI上显示相机标定结果
-        // e.g., ui->cameraMatrixLabel->setText(cameraMatrix);
-      } else {
-        QMessageBox::warning(this, "Calibration", "Camera calibration failed.");
-      }
-    }
-  }
-}
+void MainWindow::on_actionCalibrate_triggered() {}
