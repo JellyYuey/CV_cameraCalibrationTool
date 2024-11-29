@@ -1,12 +1,17 @@
 #include "CameraCalibration.h"
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc.hpp>  // Include OpenCV drawing module
+<<<<<<< HEAD
 #include <opencv2/features2d.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
 #include <QFileDialog>
 #include <QMouseEvent>
 #include <QHash>
+=======
+#include <QFileDialog>
+#include <QMouseEvent>
+>>>>>>> 10cf5d6e155af2e847060c1af42f091a5c3ddb82
 
 CameraCalibration::CameraCalibration() {}
 CameraCalibration::~CameraCalibration() {}
@@ -45,19 +50,25 @@ bool CameraCalibration::processImage(const QImage &image, std::vector<cv::Point2
                                            cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_NORMALIZE_IMAGE);
 
     if (found) {
+<<<<<<< HEAD
         // 将图像和特征点保存到 imageFeaturePoints 中
         // 假设 image 是一个 QImage 对象
         QPixmap* pixmap = new QPixmap(QPixmap::fromImage(image)); // 创建 QPixmap 对象的指针
 
 
         allFeaturePoints.push_back(corners);
+=======
+>>>>>>> 10cf5d6e155af2e847060c1af42f091a5c3ddb82
         // Refine corner positions
         cv::cornerSubPix(grayImage, corners, cv::Size(11, 11), cv::Size(-1, -1),
                          cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::MAX_ITER, 30, 0.1));
 
         // Draw the detected corners on the image
         cv::drawChessboardCorners(matImage, cv::Size(9, 6), corners, found);
+<<<<<<< HEAD
         setFeaturePoints(*pixmap,corners);
+=======
+>>>>>>> 10cf5d6e155af2e847060c1af42f091a5c3ddb82
         processedMat = matImage.clone();  // Save the processed image
     } else {
         qDebug() << "Corners not found!";
@@ -66,6 +77,7 @@ bool CameraCalibration::processImage(const QImage &image, std::vector<cv::Point2
     // Return the modified image (with drawn corners)
     return found;
 }
+<<<<<<< HEAD
 size_t CameraCalibration::customPixmapHash(const QPixmap& pixmap) {
     // 将 QPixmap 转换为 QImage
     QImage image = pixmap.toImage();
@@ -114,6 +126,8 @@ void CameraCalibration::setFeaturePoints(const QPixmap& pixmap, const std::vecto
 
 }
 
+=======
+>>>>>>> 10cf5d6e155af2e847060c1af42f091a5c3ddb82
 
 /**
  * @brief Detect chessboard corners in the image.

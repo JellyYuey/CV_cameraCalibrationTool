@@ -1,2 +1,8 @@
 build
+<<<<<<< HEAD
 CameraCalibration.pro.user
+=======
+CameraCalibration.pro.user
+CMakeLists.txt
+.vscode
+>>>>>>> 10cf5d6e155af2e847060c1af42f091a5c3ddb82
