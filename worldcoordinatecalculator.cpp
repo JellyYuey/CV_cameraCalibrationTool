@@ -11,6 +11,6 @@ std::vector<cv::Point3f> WorldCoordinateCalculator::generateWorldCoordinates(con
             worldPoints.push_back(cv::Point3f(j * boxSize, i * boxSize, 0.0f));
         }
     }
-
+    worldCoordinates.push_back(worldPoints);
     return worldPoints;
 }
