@@ -1,2 +1,4 @@
 build
 CameraCalibration.pro.user
+CMakeLists.txt
+.vscode
