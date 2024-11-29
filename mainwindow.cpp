@@ -88,9 +88,12 @@ void MainWindow::addPixmap(const QPixmap &img)
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     QPixmap pixmap = ui->label->pixmap();
-
+    auto hashValue=calibration.customPixmapHash(pixmap);
+    // 打印哈希值
+    qDebug() << "匹配图像Pixmap Hash: " << hashValue;
     // 获取当前图像的特征点
     std::vector<cv::Point2f> featurePoints = calibration.getFeaturePoints(pixmap);
+
 
     if (event->button() == Qt::LeftButton) {
         // 获取相对于 ui->label 的坐标

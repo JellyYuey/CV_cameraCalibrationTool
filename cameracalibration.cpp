@@ -1,6 +1,9 @@
 #include "CameraCalibration.h"
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc.hpp>  // Include OpenCV drawing module
+#include <opencv2/features2d.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/highgui.hpp>
 #include <QFileDialog>
 #include <QMouseEvent>
 #include <QHash>
@@ -46,7 +49,7 @@ bool CameraCalibration::processImage(const QImage &image, std::vector<cv::Point2
         // 假设 image 是一个 QImage 对象
         QPixmap* pixmap = new QPixmap(QPixmap::fromImage(image)); // 创建 QPixmap 对象的指针
 
-        setFeaturePoints(*pixmap,corners);
+
         allFeaturePoints.push_back(corners);
         // Refine corner positions
         cv::cornerSubPix(grayImage, corners, cv::Size(11, 11), cv::Size(-1, -1),
@@ -54,6 +57,7 @@ bool CameraCalibration::processImage(const QImage &image, std::vector<cv::Point2
 
         // Draw the detected corners on the image
         cv::drawChessboardCorners(matImage, cv::Size(9, 6), corners, found);
+        setFeaturePoints(*pixmap,corners);
         processedMat = matImage.clone();  // Save the processed image
     } else {
         qDebug() << "Corners not found!";
@@ -63,15 +67,38 @@ bool CameraCalibration::processImage(const QImage &image, std::vector<cv::Point2
     return found;
 }
 size_t CameraCalibration::customPixmapHash(const QPixmap& pixmap) {
-    QImage image = pixmap.toImage();  // 将 QPixmap 转换为 QImage
+    // 将 QPixmap 转换为 QImage
+    QImage image = pixmap.toImage();
+
+    // 将 QImage 转换为 OpenCV Mat
+    cv::Mat mat(image.height(), image.width(), CV_8UC4, const_cast<uchar*>(image.bits()), image.bytesPerLine());
+
+    // 转换为灰度图像
+    cv::Mat gray;
+    cv::cvtColor(mat, gray, cv::COLOR_RGBA2GRAY);
+
+    // 创建 ORB 特征检测器
+    cv::Ptr<cv::ORB> orb = cv::ORB::create();
+
+    // 存储关键点和描述符
+    std::vector<cv::KeyPoint> keypoints;
+    cv::Mat descriptors;
+
+    // 检测 ORB 特征点和计算描述符
+    orb->detectAndCompute(gray, cv::Mat(), keypoints, descriptors);
+
+    // 将描述符转换为字节数组
     QByteArray byteArray;
     QDataStream stream(&byteArray, QIODevice::WriteOnly);
-    stream << image;  // 将 QImage 写入流
-    return qHash(byteArray);  // 使用 byteArray 的哈希值
+    stream.writeRawData(reinterpret_cast<const char*>(descriptors.data), descriptors.total() * descriptors.elemSize());
+
+    // 使用 QHash 计算描述符的哈希值
+    return qHash(byteArray);
 }
 
+
 std::vector<cv::Point2f> CameraCalibration::getFeaturePoints(const QPixmap& pixmap) {
-    size_t pixmapHash = customPixmapHash(pixmap);  // 使用 pixmap 的哈希值作为键
+    auto pixmapHash = customPixmapHash(pixmap);  // 使用 pixmap 的哈希值作为键
     auto it = imageFeaturePoints.find(pixmapHash); // 查找对应的哈希值
     if (it != imageFeaturePoints.end()) {
         return it.value(); // 使用 it.value() 获取特征点列表
@@ -82,6 +109,9 @@ std::vector<cv::Point2f> CameraCalibration::getFeaturePoints(const QPixmap& pixm
 void CameraCalibration::setFeaturePoints(const QPixmap& pixmap, const std::vector<cv::Point2f>& corners) {
     size_t pixmapHash = customPixmapHash(pixmap);  // 使用 pixmap 的哈希值作为键
     imageFeaturePoints[pixmapHash] = corners;      // 存储特征点
+    // 打印哈希值
+    qDebug() << "新增Pixmap Hash: " << pixmapHash ;
+
 }
 
 

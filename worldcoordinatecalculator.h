@@ -7,6 +7,7 @@ class WorldCoordinateCalculator
 {
 public:
     // Constructor initializing the number of rows, columns, and the physical size of each square
+    WorldCoordinateCalculator(){};
     WorldCoordinateCalculator(int rows, int cols, float boxSize):rows(rows), cols(cols), boxSize(boxSize) {}
 
     // Generate world coordinates based on the given image points
