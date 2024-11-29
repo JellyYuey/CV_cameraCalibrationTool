@@ -3,7 +3,7 @@
 #include"mylabel.h"
 #include "cameracalibration.h"
 #include "worldcoordinatecalculator.h"
->>>>>>> 10cf5d6e155af2e847060c1af42f091a5c3ddb82
+
 
 
 #include <QFileDialog>
