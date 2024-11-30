@@ -8,7 +8,12 @@
 #include <opencv2/imgproc.hpp> // Include OpenCV drawing module
 #include <opencv2/opencv.hpp>
 
-CameraCalibration::CameraCalibration() {}
+CameraCalibration::CameraCalibration() : imageSize(0, 0), totalAvgErr(0.0) {
+  // 初始化相机矩阵和畸变系数
+  cameraMatrix = cv::Mat::eye(3, 3, CV_64F);
+  distCoeffs = cv::Mat::zeros(8, 1, CV_64F);
+}
+
 CameraCalibration::~CameraCalibration() {}
 
 cv::Mat CameraCalibration::getProcessedImage() {
@@ -36,6 +41,13 @@ bool CameraCalibration::processImage(const QImage &image,
     return false;
   }
 
+  // 如果尚未设置图像尺寸，则获取一次
+  if (imageSize.width == 0 && imageSize.height == 0) {
+    imageSize = matImage.size();
+    qDebug() << "Image size set to:" << imageSize.width << "x"
+             << imageSize.height;
+  }
+
   // Convert image to grayscale
   cv::Mat grayImage;
   cv::cvtColor(matImage, grayImage, cv::COLOR_BGR2GRAY);
@@ -47,7 +59,6 @@ bool CameraCalibration::processImage(const QImage &image,
 
   if (found) {
 
-    // 将图像和特征点保存到 imageFeaturePoints 中
     // 假设 image 是一个 QImage 对象
     QPixmap *pixmap =
         new QPixmap(QPixmap::fromImage(image)); // 创建 QPixmap 对象的指针
@@ -233,4 +244,81 @@ QImage CameraCalibration::MatToQImage(const cv::Mat &mat) {
     qDebug() << "Unsupported image format";
     return QImage();
   }
+}
+
+bool CameraCalibration::calibrate(
+    const std::vector<std::vector<cv::Point2f>> &imagePoints,
+    const std::vector<std::vector<cv::Point3f>> &objectPoints,
+    const QString &cameraType) {
+  if (imagePoints.empty() || objectPoints.empty()) {
+    qDebug() << "Insufficient data for calibration.";
+    return false;
+  }
+
+  if (cameraType == "Standard") {
+    // 标定 Standard 相机
+    double rms = cv::calibrateCamera(objectPoints, imagePoints, imageSize,
+                                     cameraMatrix, distCoeffs, rvecs, tvecs, 0);
+
+    qDebug() << "CalibrateCamera RMS error:" << rms;
+
+    // 计算平均重投影误差
+    totalAvgErr = computeReprojectionErrors(imagePoints, objectPoints);
+
+    return true;
+  } else if (cameraType == "Fisheye") {
+    // 标定 Fisheye 相机
+    cv::Mat K = cv::Mat::eye(3, 3, CV_64F);
+    cv::Mat D = cv::Mat::zeros(4, 1, CV_64F);
+    std::vector<cv::Mat> rvecs_fisheye, tvecs_fisheye;
+
+    int flags = cv::fisheye::CALIB_RECOMPUTE_EXTRINSIC;
+    flags |= cv::fisheye::CALIB_CHECK_COND;
+    flags |= cv::fisheye::CALIB_FIX_SKEW;
+
+    double rms = cv::fisheye::calibrate(
+        objectPoints, imagePoints, imageSize, K, D, rvecs_fisheye,
+        tvecs_fisheye, flags,
+        cv::TermCriteria(cv::TermCriteria::COUNT + cv::TermCriteria::EPS, 100,
+                         1e-6));
+
+    cameraMatrix = K.clone();
+    distCoeffs = D.clone();
+    rvecs = rvecs_fisheye;
+    tvecs = tvecs_fisheye;
+
+    qDebug() << "Fisheye CalibrateCamera RMS error:" << rms;
+
+    // 计算平均重投影误差
+    totalAvgErr = computeReprojectionErrors(imagePoints, objectPoints);
+
+    return true;
+  } else {
+    qDebug() << "Unknown camera type:" << cameraType;
+    return false;
+  }
+}
+
+double CameraCalibration::computeReprojectionErrors(
+    const std::vector<std::vector<cv::Point2f>> &imagePoints,
+    const std::vector<std::vector<cv::Point3f>> &objectPoints) {
+  std::vector<float> perViewErrors(imagePoints.size());
+  double totalErr = 0;
+  int totalPoints = 0;
+
+  for (size_t i = 0; i < imagePoints.size(); ++i) {
+    std::vector<cv::Point2f> imagePoints2;
+    // 使用标定时的相机参数投影世界坐标
+    cv::projectPoints(objectPoints[i], rvecs[i], tvecs[i], cameraMatrix,
+                      distCoeffs, imagePoints2);
+
+    double err = cv::norm(imagePoints[i], imagePoints2, cv::NORM_L2);
+
+    size_t n = objectPoints[i].size();
+    perViewErrors[i] = std::sqrt(err * err / n);
+    totalErr += err * err;
+    totalPoints += n;
+  }
+
+  return std::sqrt(totalErr / totalPoints);
 }

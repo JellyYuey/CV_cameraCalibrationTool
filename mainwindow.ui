@@ -63,7 +63,7 @@
    <addaction name="separator"/>
    <addaction name="actionSettings"/>
    <addaction name="separator"/>
-   <addaction name="actionCalilbrate"/>
+   <addaction name="actionCalibrate"/>
    <addaction name="separator"/>
    <addaction name="actionExport_Camera_Parameters"/>
   </widget>
@@ -147,7 +147,7 @@
     <enum>QAction::MenuRole::NoRole</enum>
    </property>
   </action>
-  <action name="actionCalilbrate">
+  <action name="actionCalibrate">
    <property name="icon">
     <iconset theme="QIcon::ThemeIcon::MediaPlaybackStart"/>
    </property>
