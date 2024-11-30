@@ -41,6 +41,10 @@ add_executable(${PROJECT_NAME}
     ${HEADERS}
     ${UI_FILES}
     ${RESOURCE_FILES}
+    settingsStore.cpp
+    settingsStore.h
+
+
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets)

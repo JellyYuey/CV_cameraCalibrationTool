@@ -1,10 +1,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "settings.h"
 #include <QMainWindow>
 #include <QPointer>
 #include <QSettings>
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -25,15 +25,16 @@ private:
 private slots:
   void on_actionAdd_Images_triggered();
   void on_actionSettings_triggered();
-
   void on_actionCalilbrate_triggered();
 
 private:
   Ui::MainWindow *ui;
-  QString cameraType;
-  QString calibrationBoardType;
-  int calibrationBoardSize;
-  QSettings settings;
-  QPointer<Settings> settingsDialog;
+
+  // settings
+  QString cameraModel;
+  int checkerBoardLength;
+  int checkerBoardWidth;
+  int squareSize;
+
 };
 #endif // MAINWINDOW_H

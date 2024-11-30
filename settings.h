@@ -2,7 +2,6 @@
 #define SETTINGS_H
 
 #include <QDialog>
-#include <QSettings>
 
 namespace Ui {
 class Settings;
