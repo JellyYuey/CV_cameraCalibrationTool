@@ -1,6 +1,6 @@
 #include "ui_settings.h"  // 包含生成的头文件
-#include "QSettings"
 #include "settings.h"
+#include "settingsStore.h"
 
 Settings::Settings(QWidget *parent)
     : QDialog(parent)
@@ -28,39 +28,21 @@ void Settings::on_cancelButton_clicked()
 
 void Settings::saveSettings()
 {
-    QSettings settings("MyCompany", "MyApp");
-
-    settings.setValue("CameraModel", ui->CameraModel->currentText());
-    settings.setValue("Boardsize", ui->CalibrationBoardSize->currentText());
-    settings.setValue("Boardtype", ui->CalibrationBoardType->currentText());
+    SettingsStore& settings = SettingsStore::getInstance();
+    settings.checkerBoardWidth = ui->checkerBoardWidth->value();
+    settings.checkerBoardLength = ui->checkerBoardLength->value();
+    settings.cameraModel = ui->cameraModel->currentText();
+    settings.squareSize = ui->squareSize->value();
 }
 
 void Settings::loadSettings()
 {
-    QSettings settings("MyCompany", "MyApp");
-
-    QString CameraModelLabel = settings.value("CameraModel").toString();
-    if (!CameraModelLabel.isEmpty()) {
-        int index = ui->CameraModel->findText(CameraModelLabel);
-        if (index != -1) {
-            ui->CameraModel->setCurrentIndex(index);
-        }
-    }
-
-    QString BoardsizeLabel = settings.value("Boardsize").toString();
-    if (!BoardsizeLabel.isEmpty()) {
-        int index = ui->CalibrationBoardSize->findText(BoardsizeLabel);
-        if (index != -1) {
-            ui->CalibrationBoardSize->setCurrentIndex(index);
-        }
-    }
-
-    QString BoardTypeLabel = settings.value("BoardType").toString();
-    if (!BoardTypeLabel.isEmpty()) {
-        int index = ui->CalibrationBoardType->findText(BoardTypeLabel);
-        if (index != -1) {
-            ui->CalibrationBoardType->setCurrentIndex(index);
-        }
-    }
+    SettingsStore& settings = SettingsStore::getInstance();
+    ui->checkerBoardLength->setValue(settings.checkerBoardLength);
+    ui->checkerBoardWidth->setValue(settings.checkerBoardWidth);
+    ui->squareSize->setValue(settings.squareSize);
+    ui->cameraModel->setCurrentIndex(ui->cameraModel->findText(settings.cameraModel));
 }
+
+
 

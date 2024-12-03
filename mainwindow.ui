@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>728</width>
+    <width>630</width>
     <height>474</height>
    </rect>
   </property>
@@ -53,59 +53,16 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionNew_Session"/>
-   <addaction name="separator"/>
-   <addaction name="actionOpen_Session"/>
-   <addaction name="separator"/>
-   <addaction name="actionSave_Session"/>
-   <addaction name="separator"/>
    <addaction name="actionAdd_Images"/>
    <addaction name="separator"/>
    <addaction name="actionSettings"/>
    <addaction name="separator"/>
    <addaction name="actionCalilbrate"/>
    <addaction name="separator"/>
+   <addaction name="actionShow_Undistorted"/>
+   <addaction name="separator"/>
    <addaction name="actionExport_Camera_Parameters"/>
   </widget>
-  <action name="actionNew_Session">
-   <property name="icon">
-    <iconset resource="img.qrc">
-     <normaloff>:/img/img/New.png</normaloff>:/img/img/New.png</iconset>
-   </property>
-   <property name="text">
-    <string>New Session</string>
-   </property>
-   <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;New Session&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <property name="menuRole">
-    <enum>QAction::MenuRole::NoRole</enum>
-   </property>
-  </action>
-  <action name="actionOpen_Session">
-   <property name="icon">
-    <iconset resource="img.qrc">
-     <normaloff>:/img/img/Open.png</normaloff>:/img/img/Open.png</iconset>
-   </property>
-   <property name="text">
-    <string>Open Session</string>
-   </property>
-   <property name="menuRole">
-    <enum>QAction::MenuRole::NoRole</enum>
-   </property>
-  </action>
-  <action name="actionSave_Session">
-   <property name="icon">
-    <iconset resource="img.qrc">
-     <normaloff>:/img/img/Save.png</normaloff>:/img/img/Save.png</iconset>
-   </property>
-   <property name="text">
-    <string>Save Session</string>
-   </property>
-   <property name="menuRole">
-    <enum>QAction::MenuRole::NoRole</enum>
-   </property>
-  </action>
   <action name="actionAdd_Images">
    <property name="icon">
     <iconset resource="img.qrc">
@@ -116,21 +73,6 @@
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::NoRole</enum>
-   </property>
-  </action>
-  <action name="actionZoom_In">
-   <property name="text">
-    <string>Zoom In</string>
-   </property>
-  </action>
-  <action name="actionZoom_oup">
-   <property name="text">
-    <string>Zoom Out</string>
-   </property>
-  </action>
-  <action name="actionPan">
-   <property name="text">
-    <string>Pan</string>
    </property>
   </action>
   <action name="actionSettings">
@@ -164,6 +106,17 @@
    </property>
    <property name="text">
     <string>Export Camera Parameters</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionShow_Undistorted">
+   <property name="icon">
+    <iconset theme="QIcon::ThemeIcon::AddressBookNew"/>
+   </property>
+   <property name="text">
+    <string>Show Undistorted</string>
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::NoRole</enum>

@@ -1,9 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include"mylabel.h"
-
+#include "mylabel.h"
 #include <QFileDialog>
-
+#include <settingsStore.h>
+#include <settings.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     // ui->actionExport_Camera_Parameters->setEnabled(false);
     // ui->actionCalilbrate->setEnabled(false);
     // ui->actionSettings->setEnabled(false);
+    SettingsStore& settingsStore = SettingsStore::getInstance();
 }
 
 MainWindow::~MainWindow()
@@ -46,8 +47,8 @@ void MainWindow::on_actionAdd_Images_triggered()
         pixmap = pixmap.scaled(ui->label->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
         addPixmap(pixmap);
     }
-    ui->actionCalilbrate->setEnabled(true);
-    ui->actionSettings->setEnabled(true);
+    // ui->actionCalilbrate->setEnabled(true);
+    // ui->actionSettings->setEnabled(true);
 }
 
 /**
@@ -56,15 +57,15 @@ void MainWindow::on_actionAdd_Images_triggered()
  */
 void MainWindow::on_actionSettings_triggered()
 {
-    if (!settingsDialog) {
-        settingsDialog = new Settings(this);
-    }
-    settingsDialog->exec();
+    Settings dialog(this);
+    dialog.exec();
 }
 
 
 void MainWindow::on_actionCalilbrate_triggered()
 {
     //Clibration start
+
+
 }
 
