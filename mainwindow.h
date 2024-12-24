@@ -34,7 +34,7 @@ private slots:
   void loadVideoFiles();
   void on_actionSettings_triggered();
 
-  void on_actionCalilbrate_triggered();
+  void on_actionCalibrate_triggered();
 
 private:
   Ui::MainWindow *ui;
@@ -45,5 +45,8 @@ private:
   QPointer<Settings> settingsDialog;
   CameraCalibration calibration;
   WorldCoordinateCalculator calculator;
+
+  std::vector<std::vector<cv::Point2f>> allImagePoints; // 所有图像的像素坐标
+  std::vector<std::vector<cv::Point3f>> allObjectPoints; // 所有图像的世界坐标
 };
 #endif // MAINWINDOW_H
