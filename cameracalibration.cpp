@@ -136,7 +136,7 @@ void CameraCalibration::setFeaturePoints(
  * @return true if corners were found, false otherwise.
  */
 bool CameraCalibration::detectCorners(const cv::Mat &image,
-                                      std::vector<cv::Point2f> &corners) {
+    std::vector<cv::Point2f> &corners) {
   // Detect chessboard corners
   return cv::findChessboardCorners(image, cv::Size(9, 6), corners);
 }
@@ -149,8 +149,7 @@ bool CameraCalibration::detectCorners(const cv::Mat &image,
  * @param image The input image in cv::Mat format.
  * @param corners A reference to the vector of detected corners to be refined.
  */
-void CameraCalibration::optimizeCorners(cv::Mat &image,
-                                        std::vector<cv::Point2f> &corners) {
+void CameraCalibration::optimizeCorners(cv::Mat &image, std::vector<cv::Point2f> &corners) {
   // Refine corner positions
   cv::cornerSubPix(
       image, corners, cv::Size(11, 11), cv::Size(-1, -1),

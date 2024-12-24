@@ -23,12 +23,15 @@ public:
   void onImageClicked(QPoint point);
   void onImageDragged(QPoint point);
   void mousePressEvent(QMouseEvent *event) override;
+  void processVideoFile(const QString &selectedFilee);
 
 private:
   void addPixmap(const QPixmap &);
 
 private slots:
   void on_actionAdd_Images_triggered();
+  void loadImageFiles();
+  void loadVideoFiles();
   void on_actionSettings_triggered();
 
   void on_actionCalilbrate_triggered();

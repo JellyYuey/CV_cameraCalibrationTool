@@ -5,8 +5,12 @@
 #include "worldcoordinatecalculator.h"
 
 
-
+#include <opencv2/opencv.hpp>
 #include <QFileDialog>
+#include <QMenu>
+#include <QDir>
+#include <QPixmap>
+#include <QImage>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -136,6 +140,27 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
  */
 void MainWindow::on_actionAdd_Images_triggered()
 {
+    // 创建一个 QMenu 对象，作为下拉菜单
+    QMenu *menu = new QMenu(this);
+
+    // 添加两个选项到下拉菜单
+    QAction *imageAction = new QAction("Image File", this);
+    QAction *videoAction = new QAction("Video File", this);
+
+    // 将选项添加到菜单
+    menu->addAction(imageAction);
+    menu->addAction(videoAction);
+
+    // 连接信号到槽函数
+    connect(imageAction, &QAction::triggered, this, &MainWindow::loadImageFiles);
+    connect(videoAction, &QAction::triggered, this, &MainWindow::loadVideoFiles);
+
+    // 将菜单绑定到按钮
+    menu->exec(QCursor::pos()); // 在鼠标位置显示菜单
+}
+
+void MainWindow::loadImageFiles()
+{
     QStringList selectedFiles = QFileDialog::getOpenFileNames(nullptr,"Open Files", QDir::homePath());
 
     foreach (const QString &selectedFile, selectedFiles) {
@@ -146,6 +171,17 @@ void MainWindow::on_actionAdd_Images_triggered()
     }
     ui->actionCalilbrate->setEnabled(true);
     ui->actionSettings->setEnabled(true);
+}
+
+void MainWindow::loadVideoFiles()
+{
+    QStringList selectedFiles = QFileDialog::getOpenFileNames(nullptr, "Open Video Files", QDir::homePath(), "Videos (*.mp4 *.avi *.mkv)");
+
+    foreach (const QString &selectedFile, selectedFiles) {
+        qDebug() << "Selected video file:" << selectedFile;
+        // 在这里添加加载或处理视频的逻辑
+        processVideoFile(selectedFile); // 假设你有一个处理视频的方法
+    }
 }
 
 /**
@@ -164,6 +200,40 @@ void MainWindow::on_actionSettings_triggered()
 void MainWindow::on_actionCalilbrate_triggered()
 {
     //Clibration start
+}
+void MainWindow::processVideoFile(const QString &selectedFile)
+{
+    cv::VideoCapture cap(selectedFile.toStdString());
+    if (!cap.isOpened()) {
+        qDebug() << "Error opening video stream or file";
+        return;
+    }
+
+    int frameSkip = 30; // 每隔30帧抓取一次
+    int frameCount = 0;
+
+    cv::Mat frame;
+
+    while (cap.read(frame)) {
+        if (++frameCount % frameSkip == 0) {
+            // 将 OpenCV 的 Mat 转换为 QImage
+            cv::Mat rgbFrame;
+            cvtColor(frame, rgbFrame, cv::COLOR_BGR2RGB); // 确保颜色通道顺序正确
+
+            QImage qImg((const unsigned char*)(rgbFrame.data),
+                        rgbFrame.cols, rgbFrame.rows,
+                        rgbFrame.step, QImage::Format_RGB888);
+            qImg = qImg.copy(); // 创建深拷贝以避免数据被释放的问题
+
+            // 将 QImage 转换为 QPixmap 并添加到 UI 中
+            QPixmap pixmap = QPixmap::fromImage(qImg);
+            pixmap = pixmap.scaled(ui->label->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            addPixmap(pixmap);
+
+            qDebug() << "Captured frame at position" << cap.get(cv::CAP_PROP_POS_FRAMES);
+        }
+    }
+
 }
 
 

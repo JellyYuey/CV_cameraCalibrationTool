@@ -1,4 +1,6 @@
 QT       += core gui
+QT       += core gui widgets openglwidgets
+
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -12,6 +14,7 @@ Target = CameraCalibration
 
 SOURCES += \
     cameracalibration.cpp \
+    cameracalibrationview.cpp \
     main.cpp \
     mainwindow.cpp \
     mylabel.cpp \
@@ -20,6 +23,7 @@ SOURCES += \
 
 HEADERS += \
     cameracalibration.h \
+    cameracalibrationview.h \
     mainwindow.h \
     mylabel.h \
     settings.h \
@@ -32,8 +36,10 @@ FORMS += \
 INCLUDEPATH += "C:/opencv/build/include"
 
 LIBS += -L"C:/opencv/build/x64/vc16/lib"
+
 # 示例：链接 opencv_world410.lib
 LIBS += -lopencv_world4100d
+
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
