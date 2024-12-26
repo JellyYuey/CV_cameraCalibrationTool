@@ -28,15 +28,17 @@ public:
 
 private:
   void addPixmap(const QPixmap &);
+  void exportToPDF(const QString &filePath);
+  void exportToText(const QString &filePath);
 
 private slots:
   void on_actionAdd_Images_triggered();
   void loadImageFiles();
   void loadVideoFiles();
   void on_actionSettings_triggered();
-
   void on_actionCalibrate_triggered();
   void on_new_session_triggered();
+  void on_actionExport_Camera_Parameters_triggered();
 
 private:
   Ui::MainWindow *ui;

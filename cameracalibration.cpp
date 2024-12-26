@@ -53,6 +53,15 @@ bool CameraCalibration::calibrate(
     const std::vector<std::vector<cv::Point3f>> &inputObjectPoints,
     const QString &cameraType, const cv::Size &imageSize) {
 
+  clear(); // 清空上次结果
+
+  // 根据相机类型初始化畸变系数
+  if (cameraType.toLower() == "fisheye") {
+    distCoeffs = cv::Mat::zeros(4, 1, CV_64F);
+  } else {
+    distCoeffs = cv::Mat::zeros(5, 1, CV_64F);
+  }
+
   try {
     // 1. 输入数据的基本检查
     if (inputImagePoints.empty() || inputObjectPoints.empty()) {
@@ -79,43 +88,23 @@ bool CameraCalibration::calibrate(
     // 4. 标定过程封装为一个lambda函数
     auto performCalibration = [&](double &rms) -> bool {
       if (cameraType.toLower() == "standard") {
-        // 标准相机标定
+        // 标准相机标定，无需重新初始化distCoeffs
         int flags = 0;
-        // 可以根据需要调整标志，例如固定某些畸变系数
-        // flags |= cv::CALIB_FIX_K3; // 示例：固定K3
-
-        // 设置终止条件
         cv::TermCriteria criteria(
             cv::TermCriteria::EPS + cv::TermCriteria::MAX_ITER, 100, 1e-8);
-
         rms = cv::calibrateCamera(objPointsCopy, imgPointsCopy, imageSize,
                                   cameraMatrix, distCoeffs, rvecs, tvecs, flags,
                                   criteria);
-
-        qDebug() << "Standard camera calibration RMS:" << rms;
       } else if (cameraType.toLower() == "fisheye") {
-        // 鱼眼相机标定
-        distCoeffs =
-            cv::Mat::zeros(4, 1, CV_64F); // 鱼眼模型通常使用4个畸变系数
-
+        // 鱼眼相机标定，无需重新初始化distCoeffs
         int flags = cv::fisheye::CALIB_RECOMPUTE_EXTRINSIC |
                     cv::fisheye::CALIB_CHECK_COND;
-        // 不固定畸变参数，允许优化所有参数
-
-        // 设置终止条件
         cv::TermCriteria criteria(
             cv::TermCriteria::EPS + cv::TermCriteria::MAX_ITER, 100, 1e-8);
-
         rms = cv::fisheye::calibrate(objPointsCopy, imgPointsCopy, imageSize,
                                      cameraMatrix, distCoeffs, rvecs, tvecs,
                                      flags, criteria);
-
-        qDebug() << "Fisheye camera calibration RMS:" << rms;
-      } else {
-        qWarning() << "Unsupported camera type:" << cameraType;
-        return false;
       }
-
       return true;
     };
 
@@ -188,21 +177,6 @@ bool CameraCalibration::calibrate(
                << totalAvgErr;
     }
 
-    // 9. 保存标定结果（可选，根据需求）
-    // 例如，将相机矩阵和畸变系数保存到文件
-    /*
-    cv::FileStorage fs_out("calibration_result.yml", cv::FileStorage::WRITE);
-    if (fs_out.isOpened()) {
-        fs_out << "camera_matrix" << cameraMatrix;
-        fs_out << "distortion_coefficients" << distCoeffs;
-        fs_out.release();
-        qDebug() << "Calibration parameters saved to calibration_result.yml";
-    } else {
-        qWarning() << "Failed to save calibration parameters to file.";
-    }
-    */
-
-    // 10. 返回标定结果
     return true;
 
   } catch (const cv::Exception &e) {

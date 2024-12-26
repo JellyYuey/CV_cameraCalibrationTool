@@ -5,12 +5,18 @@
 #include "ui_mainwindow.h"
 #include "worldcoordinatecalculator.h"
 
+#include <QDateTime>
 #include <QDir>
+#include <QFile>
 #include <QFileDialog>
 #include <QImage>
 #include <QMenu>
 #include <QMessageBox>
+#include <QPageSize>
+#include <QPainter>
+#include <QPdfWriter>
 #include <QPixmap>
+#include <QTextStream>
 #include <opencv2/opencv.hpp>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -260,15 +266,15 @@ void MainWindow::on_actionCalibrate_triggered() {
     qDebug() << "Reprojection error:" << reprojectionError;
 
     // 新增：打印相机内参矩阵
-    qDebug() << "Camera Matrix:";
-    for (int r = 0; r < cameraMatrix.rows; ++r) {
-      QString rowValues;
-      for (int c = 0; c < cameraMatrix.cols; ++c) {
-        rowValues +=
-            QString::number(cameraMatrix.at<double>(r, c), 'f', 6) + " ";
-      }
-      qDebug() << rowValues;
-    }
+    // qDebug() << "Camera Matrix:";
+    // for (int r = 0; r < cameraMatrix.rows; ++r) {
+    //   QString rowValues;
+    //   for (int c = 0; c < cameraMatrix.cols; ++c) {
+    //     rowValues +=
+    //         QString::number(cameraMatrix.at<double>(r, c), 'f', 6) + " ";
+    //   }
+    //   qDebug() << rowValues;
+    // }
 
     CalibrationResultViewer viewer(cameraMatrix, distCoeffs, reprojectionError,
                                    this);
@@ -321,4 +327,178 @@ void MainWindow::on_new_session_triggered() {
   }
   allImagePoints.clear();
   allObjectPoints.clear();
+}
+
+void MainWindow::on_actionExport_Camera_Parameters_triggered() {
+  if (!calibration.isCalibrated()) {
+    QMessageBox::warning(this, tr("导出失败"),
+                         tr("没有可用的标定结果，请先完成相机标定。"));
+    return;
+  }
+
+  QString timestamp = QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss");
+  QString fileName = QString("result_%1.pdf").arg(timestamp);
+
+  QString filePath = QFileDialog::getSaveFileName(
+      this, tr("保存标定结果"), QDir::homePath() + "/" + fileName,
+      tr("PDF文件 (*.pdf);;文本文件 (*.txt)"));
+
+  if (filePath.isEmpty())
+    return;
+
+  if (filePath.endsWith(".pdf", Qt::CaseInsensitive)) {
+    exportToPDF(filePath);
+  } else {
+    exportToText(filePath); // 保留原来的文本导出功能
+  }
+}
+
+void MainWindow::exportToPDF(const QString &filePath) {
+  QPdfWriter pdfWriter(filePath);
+  pdfWriter.setPageSize(QPageSize(QPageSize::A4));
+  pdfWriter.setPageMargins(QMarginsF(30, 30, 30, 30));
+
+  QPainter painter(&pdfWriter);
+  painter.setPen(Qt::black);
+
+  // 设置字体
+  QFont titleFont("Arial", 16, QFont::Bold);
+  QFont normalFont("Arial", 10);
+  QFont monoFont("Courier New", 10);
+
+  int yPos = 500;
+  const int lineHeight = 300;
+
+  // 标题
+  painter.setFont(titleFont);
+  painter.drawText(1000, yPos, tr("相机标定报告"));
+  yPos += lineHeight;
+
+  // 标定时间
+  painter.setFont(normalFont);
+  painter.drawText(
+      500, yPos,
+      tr("标定时间: %1")
+          .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss")));
+  yPos += lineHeight;
+
+  // 相机类型
+  painter.drawText(500, yPos, tr("相机类型: %1").arg(cameraType));
+  yPos += lineHeight;
+
+  // 相机内参矩阵
+  painter.drawText(500, yPos, tr("相机内参矩阵:"));
+  yPos += lineHeight;
+
+  painter.setFont(monoFont);
+  cv::Mat cameraMatrix = calibration.getCameraMatrix();
+  for (int i = 0; i < cameraMatrix.rows; ++i) {
+    QString row;
+    for (int j = 0; j < cameraMatrix.cols; ++j) {
+      row += QString::number(cameraMatrix.at<double>(i, j), 'f', 6) + "  ";
+    }
+    painter.drawText(500, yPos, row);
+    yPos += lineHeight;
+  }
+
+  // 畸变系数
+  painter.setFont(normalFont);
+  painter.drawText(500, yPos, tr("畸变系数:"));
+  yPos += lineHeight;
+
+  painter.setFont(monoFont);
+  cv::Mat distCoeffs = calibration.getDistCoeffs();
+
+  // 根据相机类型选择合适的系数名称列表
+  QStringList coeffNames;
+  if (cameraType.toLower() == "fisheye") {
+    coeffNames = {
+        "k1 (径向畸变):", "k2 (径向畸变):", "k3 (径向畸变):", "k4 (径向畸变):"};
+  } else { // Standard camera
+    coeffNames = {"k1 (径向畸变):", "k2 (径向畸变):", "p1 (切向畸变):",
+                  "p2 (切向畸变):", "k3 (径向畸变):"};
+  }
+
+  // 输出所有可用的畸变系数
+  int numCoeffs = std::min(static_cast<int>(distCoeffs.cols),
+                           static_cast<int>(coeffNames.size()));
+  for (int i = 0; i < numCoeffs; ++i) {
+    QString distText =
+        QString("%1 %2")
+            .arg(coeffNames[i])
+            .arg(QString::number(distCoeffs.at<double>(0, i), 'f', 6));
+    painter.drawText(500, yPos, distText);
+    yPos += lineHeight;
+  }
+
+  // 重投影误差
+  painter.setFont(normalFont);
+  painter.drawText(
+      500, yPos,
+      tr("重投影误差: %1")
+          .arg(QString::number(calibration.getReprojectionError(), 'f', 6)));
+
+  painter.end();
+
+  QMessageBox::information(this, tr("导出成功"),
+                           tr("标定结果已保存到:\n%1").arg(filePath));
+}
+
+// 重命名原来的导出函数
+void MainWindow::exportToText(const QString &filePath) {
+  // 检查是否有标定结果
+  if (!calibration.isCalibrated()) {
+    QMessageBox::warning(this, tr("导出失败"),
+                         tr("没有可用的标定结果，请先完成相机标定。"));
+    return;
+  }
+
+  QFile file(filePath);
+  if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+    QMessageBox::critical(this, tr("错误"), tr("无法创建文件！"));
+    return;
+  }
+
+  QTextStream out(&file);
+
+  // 写入标定时间
+  out << "标定时间: "
+      << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") << "\n\n";
+
+  // 写入相机矩阵
+  cv::Mat cameraMatrix = calibration.getCameraMatrix();
+  out << "相机内参矩阵:\n";
+  for (int i = 0; i < cameraMatrix.rows; ++i) {
+    for (int j = 0; j < cameraMatrix.cols; ++j) {
+      out << QString::number(cameraMatrix.at<double>(i, j), 'f', 6) << "\t";
+    }
+    out << "\n";
+  }
+  out << "\n";
+
+  // 写入畸变系数
+  cv::Mat distCoeffs = calibration.getDistCoeffs();
+  out << "畸变系数:\n";
+  out << "k1 (径向畸变): "
+      << QString::number(distCoeffs.at<double>(0, 0), 'f', 6) << "\n";
+  out << "k2 (径向畸变): "
+      << QString::number(distCoeffs.at<double>(0, 1), 'f', 6) << "\n";
+  out << "p1 (切向畸变): "
+      << QString::number(distCoeffs.at<double>(0, 2), 'f', 6) << "\n";
+  out << "p2 (切向畸变): "
+      << QString::number(distCoeffs.at<double>(0, 3), 'f', 6) << "\n";
+  if (distCoeffs.cols > 4) {
+    out << "k3 (径向畸变): "
+        << QString::number(distCoeffs.at<double>(0, 4), 'f', 6) << "\n";
+  }
+  out << "\n";
+
+  // 写入重投影误差
+  out << "重投影误差: "
+      << QString::number(calibration.getReprojectionError(), 'f', 6) << "\n";
+
+  file.close();
+
+  QMessageBox::information(this, tr("导出成功"),
+                           tr("标定结果已保存到:\n%1").arg(filePath));
 }

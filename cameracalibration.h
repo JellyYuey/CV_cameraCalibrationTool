@@ -28,6 +28,8 @@ public:
   cv::Mat getCameraMatrix() const { return cameraMatrix; }
   cv::Mat getDistCoeffs() const { return distCoeffs; }
   double getReprojectionError() const { return totalAvgErr; }
+  bool isCalibrated() const { return !cameraMatrix.empty(); }
+  const std::vector<double> &getPerViewErrors() const { return perViewErrors; }
 
 private:
   // 标定结果
@@ -36,12 +38,21 @@ private:
   std::vector<cv::Mat> rvecs;
   std::vector<cv::Mat> tvecs;
   double totalAvgErr;
+  std::vector<double> perViewErrors; // 存储每张图片的重投影误差
 
   // 计算重投影误差
   double computeReprojectionErrors(
       const std::vector<std::vector<cv::Point2f>> &imagePoints,
       const std::vector<std::vector<cv::Point3f>> &objectPoints,
       const QString &cameraType);
+
+  void clear() {
+    cameraMatrix = cv::Mat::eye(3, 3, CV_64F);
+    distCoeffs.release(); // 将在标定时根据类型初始化
+    rvecs.clear();
+    tvecs.clear();
+    totalAvgErr = 0.0;
+  }
 };
 
 #endif // CAMERACALIBRATION_H
