@@ -3,6 +3,7 @@
 
 // Generate world coordinates for the chessboard
 
+// verifed: 1
 std::vector<cv::Point3f> WorldCoordinateCalculator::generateWorldCoordinates(
     const std::vector<cv::Point2f> &imagePoints) {
   std::vector<cv::Point3f> worldPoints;

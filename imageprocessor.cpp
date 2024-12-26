@@ -139,29 +139,35 @@ QPixmap ImageProcessor::detectAndDrawChessboardCorners(const QImage &image,
   }
 }
 
-// QImage转cv::Mat
 cv::Mat ImageProcessor::QImageToMat(const QImage &image) {
   if (image.isNull())
     return cv::Mat();
 
-  if (image.format() == QImage::Format_RGB888) {
-    return cv::Mat(image.height(), image.width(), CV_8UC3, (void *)image.bits(),
-                   image.bytesPerLine());
-  } else if (image.format() == QImage::Format_Indexed8) {
-    return cv::Mat(image.height(), image.width(), CV_8U, (void *)image.bits(),
-                   image.bytesPerLine());
-  } else if (image.format() == QImage::Format_ARGB32 ||
-             image.format() == QImage::Format_RGB32) {
+  cv::Mat mat;
+  switch (image.format()) {
+  case QImage::Format_RGB888:
+    mat = cv::Mat(image.height(), image.width(), CV_8UC3, (void *)image.bits(),
+                  image.bytesPerLine())
+              .clone();
+    break;
+  case QImage::Format_Indexed8:
+    mat = cv::Mat(image.height(), image.width(), CV_8U, (void *)image.bits(),
+                  image.bytesPerLine())
+              .clone();
+    break;
+  case QImage::Format_ARGB32:
+  case QImage::Format_RGB32: {
     cv::Mat temp(image.height(), image.width(), CV_8UC4, (void *)image.bits(),
                  image.bytesPerLine());
-    cv::Mat rgbMat;
-    cv::cvtColor(temp, rgbMat, cv::COLOR_RGBA2RGB);
-    return rgbMat;
+    cv::cvtColor(temp, mat, cv::COLOR_BGRA2BGR); // 修正颜色转换
+    break;
   }
-  return cv::Mat();
+  default:
+    mat = cv::Mat();
+  }
+  return mat;
 }
 
-// cv::Mat转QImage
 QImage ImageProcessor::MatToQImage(const cv::Mat &mat) {
   if (mat.empty())
     return QImage();

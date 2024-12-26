@@ -132,7 +132,7 @@ bool CameraCalibration::calibrate(
 
     // 7. 标记高误差图像
     std::vector<size_t> badImages;
-    double errorThreshold = 3.0; // 设置误差阈值，例如1.5像素
+    double errorThreshold = 1.5; // 设置误差阈值，例如1.5像素
 
     for (size_t i = 0; i < objPointsCopy.size(); ++i) {
       std::vector<cv::Point2f> projectedPoints;

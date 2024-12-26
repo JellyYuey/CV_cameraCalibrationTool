@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
       calibration() // 初始化 calibration 对象
 {
   ui->setupUi(this);
+  setWindowTitle(tr("相机标定工具"));
 
   // 注释或移除默认参数设置
   // calculator.setCols(2);
@@ -179,8 +180,9 @@ void MainWindow::loadImageFiles() {
   foreach (const QString &selectedFile, selectedFiles) {
     qDebug() << selectedFile;
     QPixmap pixmap(selectedFile);
-    pixmap = pixmap.scaled(ui->label->size(), Qt::KeepAspectRatio,
-                           Qt::SmoothTransformation);
+    // 捏吗的缩放，影响这么大
+    //  pixmap = pixmap.scaled(ui->label->size(), Qt::KeepAspectRatio,
+    //                         Qt::SmoothTransformation);
     addPixmap(pixmap);
   }
 
@@ -253,6 +255,17 @@ void MainWindow::on_actionCalibrate_triggered() {
     qDebug() << "Calibration successful:";
 
     qDebug() << "Reprojection error:" << reprojectionError;
+
+    // 新增：打印相机内参矩阵
+    qDebug() << "Camera Matrix:";
+    for (int r = 0; r < cameraMatrix.rows; ++r) {
+      QString rowValues;
+      for (int c = 0; c < cameraMatrix.cols; ++c) {
+        rowValues +=
+            QString::number(cameraMatrix.at<double>(r, c), 'f', 6) + " ";
+      }
+      qDebug() << rowValues;
+    }
 
     CalibrationResultViewer viewer(cameraMatrix, distCoeffs, reprojectionError,
                                    this);
