@@ -18,6 +18,10 @@ public:
 
   QString getCameraModel() const; // 添加此方法
 
+  int getBoardRows() const;
+
+  int getBoardCols() const;
+
 private slots:
   void saveSettings();
   void loadSettings();

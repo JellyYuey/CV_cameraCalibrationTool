@@ -23,6 +23,8 @@ void Settings::saveSettings() {
   settings.setValue("CameraModel", ui->CameraModel->currentText());
   settings.setValue("Boardsize", ui->CalibrationBoardSize->currentText());
   settings.setValue("Boardtype", ui->CalibrationBoardType->currentText());
+  settings.setValue("BoardRows", ui->BoardRows->value());
+  settings.setValue("BoardCols", ui->BoardCols->value());
 }
 
 void Settings::loadSettings() {
@@ -51,6 +53,11 @@ void Settings::loadSettings() {
       ui->CalibrationBoardType->setCurrentIndex(index);
     }
   }
+
+  int rows = settings.value("BoardRows", 6).toInt();
+  int cols = settings.value("BoardCols", 9).toInt();
+  ui->BoardRows->setValue(rows);
+  ui->BoardCols->setValue(cols);
 }
 
 // Add a public method in the Settings class to get the physical size of the
@@ -64,3 +71,7 @@ float Settings::getBoardSize() {
 QString Settings::getCameraModel() const {
   return ui->CameraModel->currentText();
 }
+
+int Settings::getBoardRows() const { return ui->BoardRows->value(); }
+
+int Settings::getBoardCols() const { return ui->BoardCols->value(); }

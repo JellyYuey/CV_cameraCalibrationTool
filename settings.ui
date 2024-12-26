@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>566</width>
-    <height>342</height>
+    <height>400</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <rect>
      <x>120</x>
      <y>100</y>
-     <width>130</width>
+     <width>150</width>
      <height>22</height>
     </rect>
    </property>
@@ -40,7 +40,7 @@
     <rect>
      <x>160</x>
      <y>170</y>
-     <width>81</width>
+     <width>100</width>
      <height>20</height>
     </rect>
    </property>
@@ -72,6 +72,11 @@
      <pointsize>12</pointsize>
     </font>
    </property>
+   <item>
+    <property name="text">
+     <string>15</string>
+    </property>
+   </item>
    <item>
     <property name="text">
      <string>20</string>
@@ -136,7 +141,7 @@
    <property name="geometry">
     <rect>
      <x>160</x>
-     <y>300</y>
+     <y>330</y>
      <width>75</width>
      <height>24</height>
     </rect>
@@ -155,7 +160,7 @@
    <property name="geometry">
     <rect>
      <x>310</x>
-     <y>300</y>
+     <y>330</y>
      <width>75</width>
      <height>24</height>
     </rect>
@@ -190,11 +195,6 @@
      <string>CheckerBox</string>
     </property>
    </item>
-   <item>
-    <property name="text">
-     <string>Triangle</string>
-    </property>
-   </item>
   </widget>
   <widget class="QComboBox" name="CameraModel">
    <property name="geometry">
@@ -221,6 +221,100 @@
      <string>Fisheye</string>
     </property>
    </item>
+  </widget>
+  <widget class="QLabel" name="labelRows">
+   <property name="geometry">
+    <rect>
+     <x>124</x>
+     <y>270</y>
+     <width>121</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>微软雅黑</family>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Board Rows</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignmentFlag::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="BoardRows">
+   <property name="geometry">
+    <rect>
+     <x>320</x>
+     <y>270</y>
+     <width>71</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>微软雅黑</family>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="minimum">
+    <number>2</number>
+   </property>
+   <property name="maximum">
+    <number>50</number>
+   </property>
+   <property name="value">
+    <number>6</number>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelCols">
+   <property name="geometry">
+    <rect>
+     <x>124</x>
+     <y>300</y>
+     <width>121</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>微软雅黑</family>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Board Cols</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignmentFlag::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="BoardCols">
+   <property name="geometry">
+    <rect>
+     <x>320</x>
+     <y>300</y>
+     <width>71</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>微软雅黑</family>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="minimum">
+    <number>2</number>
+   </property>
+   <property name="maximum">
+    <number>50</number>
+   </property>
+   <property name="value">
+    <number>9</number>
+   </property>
   </widget>
  </widget>
  <resources/>

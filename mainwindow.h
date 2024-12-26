@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "cameracalibration.h"
+#include "imageprocessor.h"
 #include "settings.h"
 #include "worldcoordinatecalculator.h"
 #include <QMainWindow>
@@ -38,13 +39,18 @@ private slots:
 
 private:
   Ui::MainWindow *ui;
+
+  // 获取到的设置
   QString cameraType;
   QString calibrationBoardType;
   int calibrationBoardSize;
   QSettings settings;
   QPointer<Settings> settingsDialog;
+
+  ImageProcessor imageProcessor; // 新增：图像处理器
+
   CameraCalibration calibration;
-  WorldCoordinateCalculator calculator;
+  WorldCoordinateCalculator calculator; // 世界坐标计算器
 
   std::vector<std::vector<cv::Point2f>> allImagePoints; // 所有图像的像素坐标
   std::vector<std::vector<cv::Point3f>> allObjectPoints; // 所有图像的世界坐标
