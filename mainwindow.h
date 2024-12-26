@@ -36,6 +36,7 @@ private slots:
   void on_actionSettings_triggered();
 
   void on_actionCalibrate_triggered();
+  void on_new_session_triggered();
 
 private:
   Ui::MainWindow *ui;

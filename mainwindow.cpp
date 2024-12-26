@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
       calibration() // 初始化 calibration 对象
 {
   ui->setupUi(this);
-
+  connect(ui->actionNew_Session, &QAction::triggered, this, &MainWindow::on_new_session_triggered);
   // 注释或移除默认参数设置
   // calculator.setCols(2);
   // calculator.setRows(2);
@@ -297,4 +297,13 @@ void MainWindow::processVideoFile(const QString &selectedFile) {
                << cap.get(cv::CAP_PROP_POS_FRAMES);
     }
   }
+}
+
+void MainWindow::on_new_session_triggered()
+{
+    if(QListWidget* list = ui->listWidget) {
+        list->clear();
+    }
+    allImagePoints.clear();
+    allObjectPoints.clear();
 }

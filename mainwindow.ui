@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>728</width>
+    <width>644</width>
     <height>474</height>
    </rect>
   </property>
@@ -55,10 +55,6 @@
    </attribute>
    <addaction name="actionNew_Session"/>
    <addaction name="separator"/>
-   <addaction name="actionOpen_Session"/>
-   <addaction name="separator"/>
-   <addaction name="actionSave_Session"/>
-   <addaction name="separator"/>
    <addaction name="actionAdd_Images"/>
    <addaction name="separator"/>
    <addaction name="actionSettings"/>
@@ -66,6 +62,8 @@
    <addaction name="actionCalibrate"/>
    <addaction name="separator"/>
    <addaction name="actionExport_Camera_Parameters"/>
+   <addaction name="separator"/>
+   <addaction name="separator"/>
   </widget>
   <action name="actionNew_Session">
    <property name="icon">
@@ -83,6 +81,9 @@
    </property>
   </action>
   <action name="actionOpen_Session">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="img.qrc">
      <normaloff>:/img/img/Open.png</normaloff>:/img/img/Open.png</iconset>
